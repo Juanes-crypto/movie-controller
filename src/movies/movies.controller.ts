@@ -7,15 +7,18 @@ export class MoviesController {
     { id: 1, title: 'Inception', year: 2010 },
     { id: 2, title: 'The Matrix', year: 1999 },
   ];
-  @Get()
-findAll(@Query('year') year?: string) {
+  @Get()//@Query('year') → Esto captura el año desde la URL, el ? indica que es opcional
+findAll(@Query('year') year?: string) {//findAll su trabajo es devolver todas las pelis, a excepcion de si manda un año
   return year ? this.movies.filter(movie => movie.year.toString() === year) : this.movies;
 }
+//this.movies muestra todas las peliculas, filter busca las peliculas que coincidan al año
 //obtener una pelicula por id
-    @Get(':id')//capturo id desde la URL
-findOne(@Param('id') id: string) {
-  const movie = this.movies.find(m => m.id === parseInt(id));
-  return movie || { message: `Pelicula con ID: ${id} no fue encontrada` };
+    @Get(':id')//capturo id desde la URL, busca una peli con ese id en el array
+findOne(@Param('id') id: string) {//param (id) obtiene el id de la URL y se guarda en la variable id
+  const movie = this.movies.find(m => m.id === parseInt(id));//find recorre el array, busca un objeto que coincida con paseint(id)
+  //parseint convierte el id de la URL a numero, para que la comparacion sea estricta, si se encuentra la pelicula, se guarda en movie
+  return movie || { message: `Pelicula con ID: ${id} no fue encontrada` };//si movie existe, devuelve movie (return movie)
+  //si movie es undefined usa || (operador logico OR) para devolver el mensaje de error
 }
 //actualizar una pelicula
 @Put(':id')
@@ -39,8 +42,10 @@ remove(@Param('id') id: string) {
 }
 
 @Post()
-  create() {
-    return { message: 'Product created' };
+  create(@Body()  body: {title: string; year: number } ) {
+    const newMovie = { id: this.movies.length + 1, ...body};
+    this.movies.push(newMovie);
+    return newMovie;
   }
 
 
